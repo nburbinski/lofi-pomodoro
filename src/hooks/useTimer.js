@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const useTimer = (finishTime) => {
+export const useTimer = (finishTime, stop) => {
   const [currTime, setCurrTime] = useState(new Date());
   const isTimeUp = currTime >= finishTime;
 
@@ -13,7 +13,12 @@ export const useTimer = (finishTime) => {
     };
   }
 
+  console.log(stop);
+
   useEffect(() => {
+    if (stop) {
+      return;
+    }
     const interval = setInterval(() => {
       setCurrTime(new Date());
     }, 1000);
@@ -21,13 +26,12 @@ export const useTimer = (finishTime) => {
     return () => {
       clearInterval(interval);
     };
-  }, [setCurrTime]);
+  }, [setCurrTime, stop]);
 
   return {
     hours: new Date(finishTime - currTime).getHours(),
     minutes: new Date(finishTime - currTime).getMinutes(),
     seconds: new Date(finishTime - currTime).getSeconds(),
-    isTimeUp,
-    finishTime,
+    timeRemaining: finishTime - currTime,
   };
 };
