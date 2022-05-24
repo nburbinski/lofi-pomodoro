@@ -1,37 +1,60 @@
 import { useEffect, useState } from "react";
+let sound = require("url:../audio/Clock-sound-effect.mp3");
+import { timeToString } from "../utils/utils";
+export const useTimer = ({
+  startTime,
+  setStartTime,
+  finishTime,
+  setFinishTime,
+  stopTimer,
+  setStopTimer,
+  mode,
+  setMode,
+}) => {
+  const isTimeUp = startTime >= finishTime;
+  const timeRemaining = isTimeUp ? 0 : finishTime - startTime;
+  const [audio] = useState(new Audio(sound));
 
-export const useTimer = (finishTime, stop) => {
-  const [currTime, setCurrTime] = useState(new Date());
-  const isTimeUp = currTime >= finishTime;
-
-  if (finishTime && isTimeUp) {
-    return {
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      isTimeUp: true,
-    };
-  }
-
-  console.log(stop);
+  const minutes = timeToString(new Date(finishTime - startTime).getMinutes());
+  const seconds = timeToString(new Date(finishTime - startTime).getSeconds());
 
   useEffect(() => {
-    if (stop) {
+    if (stopTimer) {
       return;
     }
+
+    if (isTimeUp) {
+      setStopTimer(true);
+
+      audio.play();
+
+      setTimeout(() => {
+        audio.pause();
+      }, 1500);
+
+      if (mode === "work") {
+        setMode("break");
+        setStartTime(new Date());
+        setFinishTime(new Date(new Date().getTime() + 5 * 60000));
+      } else {
+        setMode("work");
+        setStartTime(new Date());
+        setFinishTime(new Date(new Date().getTime() + 25 * 60000));
+      }
+    }
+
     const interval = setInterval(() => {
-      setCurrTime(new Date());
+      setStartTime(new Date(startTime.getTime() + 1000));
     }, 1000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [setCurrTime, stop]);
+  }, [stopTimer, startTime, setStartTime, finishTime]);
 
   return {
-    hours: new Date(finishTime - currTime).getHours(),
-    minutes: new Date(finishTime - currTime).getMinutes(),
-    seconds: new Date(finishTime - currTime).getSeconds(),
-    timeRemaining: finishTime - currTime,
+    minutes,
+    seconds,
+    timeRemaining,
   };
 };
