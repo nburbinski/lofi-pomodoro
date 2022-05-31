@@ -12,50 +12,50 @@ export function newFinishTime({ displayMinutes = 25, displaySeconds = 0 }) {
   );
 }
 
-export function changeTime(
-  value,
+export function changeTime({
+  type,
   time,
-  setStop,
   setCustomTime,
   setDisplayMinutes,
-  setDisplaySeconds
-) {
-  setStop(true);
+  setDisplaySeconds,
+  setStartTime,
+  setFinishTime,
+  displayMinutes,
+  displaySeconds,
+}) {
   setCustomTime(true);
+  setStartTime(new Date());
 
-  if (time === "minutes") {
-    setDisplayMinutes(value);
+  if (type === "minutes") {
+    setDisplayMinutes(time);
+    setFinishTime(
+      new Date(new Date().getTime() + time * 60000 + displaySeconds * 1000)
+    );
   } else {
-    setDisplaySeconds(value);
+    setDisplaySeconds(time);
+    setFinishTime(
+      new Date(new Date().getTime() + displayMinutes * 60000 + time * 1000)
+    );
   }
 }
 
 export function startStopTimer(
   timeRemaining,
   stopTimer,
-  setStop
-  // setCustomTime,
-  // setStartTime,
-  // setFinishTime,
-  // displayMinutes,
-  // displaySeconds,
-  // customTime
+  setStop,
+  setCustomTime,
+  setStartTime,
+  setFinishTime,
+  displayMinutes,
+  displaySeconds
 ) {
-  // TO DO - custom times
-
-  // if (timeRemaining === 0) {
-  //   setStop(false);
-  //   setCustomTime(false);
-  //   setStartTime(new Date());
-  //   setFinishTime(newFinishTime({ displayMinutes, displaySeconds }));
-  //   return;
-  // }
-
-  // if (customTime) {
-  //   setCustomTime(false);
-  //   setStartTime(new Date());
-  //   setFinishTime(newFinishTime({ displayMinutes, displaySeconds }));
-  // }
+  if (timeRemaining === 0) {
+    setStop(false);
+    setCustomTime(false);
+    setStartTime(new Date());
+    setFinishTime(newFinishTime({ displayMinutes, displaySeconds }));
+    return;
+  }
 
   setStop(!stopTimer);
 }
